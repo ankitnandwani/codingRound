@@ -13,4 +13,12 @@ public class Helper {
     public static void waitForFrameAndSwitch(WebDriver driver, int time, String frame){
         (new WebDriverWait(driver, time)).until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frame));
     }
+
+    public static WebElement explicitWaitforElement(WebDriver driver, int time, WebElement element){
+        return (new WebDriverWait(driver, time)).until(ExpectedConditions.visibilityOf(element));
+    }
+
+    public static WebElement waitForElementToBeClickable(WebDriver driver, int time, WebElement element){
+        return (new WebDriverWait(driver, time)).until(ExpectedConditions.elementToBeClickable(element));
+    }
 }
