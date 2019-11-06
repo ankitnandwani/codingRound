@@ -4,15 +4,27 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FlightBookingTest {
 
-    WebDriver driver = new ChromeDriver();
+    WebDriver driver;
+
+    public FlightBookingTest(){
+        Map<String, Object> prefs = new HashMap<String, Object>();
+        prefs.put("profile.default_content_setting_values.notifications", 2);
+        ChromeOptions options = new ChromeOptions();
+        options.setExperimentalOption("prefs", prefs);
+
+        driver = new ChromeDriver(options);
+    }
 
 
     @Test
@@ -20,26 +32,21 @@ public class FlightBookingTest {
 
         setDriverPath();
         driver.get("https://www.cleartrip.com/");
-        waitFor(2000);
-        driver.findElement(By.id("OneWay")).click();
+        Helper.explicitWaitforElement(driver, 10, driver.findElement(By.id("OneWay"))).click();
 
         driver.findElement(By.id("FromTag")).clear();
         driver.findElement(By.id("FromTag")).sendKeys("Bangalore");
 
         //wait for the auto complete options to appear for the origin
-
-        waitFor(2000);
-        List<WebElement> originOptions = driver.findElement(By.id("ui-id-1")).findElements(By.tagName("li"));
+        List<WebElement> originOptions = Helper.explicitWaitforElement(driver, 10, driver.findElement(By.id("ui-id-1"))).findElements(By.tagName("li"));
         originOptions.get(0).click();
 
-        driver.findElement(By.id("toTag")).clear();
-        driver.findElement(By.id("toTag")).sendKeys("Delhi");
+        driver.findElement(By.id("ToTag")).clear();
+        driver.findElement(By.id("ToTag")).sendKeys("Delhi");
 
         //wait for the auto complete options to appear for the destination
-
-        waitFor(2000);
         //select the first item from the destination auto complete list
-        List<WebElement> destinationOptions = driver.findElement(By.id("ui-id-2")).findElements(By.tagName("li"));
+        List<WebElement> destinationOptions = Helper.explicitWaitforElement(driver, 10, driver.findElement(By.id("ui-id-2"))).findElements(By.tagName("li"));
         destinationOptions.get(0).click();
 
         driver.findElement(By.xpath("//*[@id='ui-datepicker-div']/div[1]/table/tbody/tr[3]/td[7]/a")).click();
@@ -47,7 +54,7 @@ public class FlightBookingTest {
         //all fields filled in. Now click on search
         driver.findElement(By.id("SearchBtn")).click();
 
-        waitFor(5000);
+        Helper.explicitWaitforElement(driver, 20, driver.findElement(By.xpath("(//a[@data-flt='non-stop'])[2]")));
         //verify that result appears for the provided journey search
         Assert.assertTrue(isElementPresent(By.className("searchSummary")));
 
